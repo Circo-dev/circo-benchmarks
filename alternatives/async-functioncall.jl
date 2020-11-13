@@ -1,7 +1,7 @@
 using BenchmarkTools
 import Base.Threads.@spawn # Seems it is the same as @async when "--threads 1"
 
-const N = 10
+const N = 1000
 const fn = x -> 2x
 
 function channelize(calcfn)
@@ -37,12 +37,12 @@ end
 function runasync(fn; N = N)
     sum = 0
     for i = 1:N
-        sum += fetch(@async fn(i))
+        sum += fetch(@spawn fn(i))
     end
     return sum
 end
 
-@info "@async:"
+@info "@spawn:"
 @btime runasync(fn)
 
 for channel_length in (0, 1, 2, 4, 8, 16, Inf)
